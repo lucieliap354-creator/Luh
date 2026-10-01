@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraStudio & Learn Portuguese | Digital Planners & Language Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        starry: {
+                            50: '#f0f4f9',
+                            100: '#e1e9f3',
+                            200: '#bfd2e6',
+                            600: '#1e3a8a',
+                            800: '#1e1b4b',
+                            900: '#0f172a',
+                            gold: '#fbbf24',
+                            amber: '#f59e0b'
+                        },
+                        portugal: {
+                            green: '#059669',
+                            red: '#dc2626',
+                            gold: '#d97706'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'Georgia', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Starry Night Canvas effect */
+        .starry-bg {
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 50%, #3a506b 100%);
+        }
+
+        /* Printable styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-planner, #printable-planner * {
+                visibility: visible;
+            }
+            #printable-planner {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col font-sans">
+
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('planner')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 via-indigo-800 to-amber-400 flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-serif font-bold text-lg leading-tight block tracking-tight">AuraStudio</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Digital & Language</span>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="hidden md:flex space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                <button id="nav-planner" onclick="switchTab('planner')" class="px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">
+                    <i class="fa-solid fa-book-open text-indigo-500"></i>
+                    <span>Digital Planners</span>
+                </button>
+                <button id="nav-portuguese" onclick="switchTab('portuguese')" class="px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                    <i class="fa-solid fa-language text-emerald-500"></i>
+                    <span>Learn Portuguese Fast</span>
+                    <span class="ml-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 text-xs px-2 py-0.5 rounded-full font-bold">$10 Class</span>
+                </button>
+            </nav>
+
+            <!-- Actions & Theme Toggle -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle Theme">
+                    <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+                <button onclick="scrollToCTA()" class="hidden sm:inline-flex bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-md shadow-amber-500/20 transition-all items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Store ($2.50)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Row -->
+        <div class="md:hidden flex border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2 py-2">
+            <button id="mobile-nav-planner" onclick="switchTab('planner')" class="flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                <i class="fa-solid fa-book-open mr-1"></i> Planners
+            </button>
+            <button id="mobile-nav-portuguese" onclick="switchTab('portuguese')" class="flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-600 dark:text-slate-400">
+                <i class="fa-solid fa-language mr-1"></i> Learn Portuguese
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- ========================================================================= -->
+        <!-- SECTION 1: DIGITAL PLANNER CREATOR & MARKETPLACE -->
+        <!-- ========================================================================= -->
+        <section id="section-planner" class="transition-opacity duration-300">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8 no-print">
+                <div class="absolute inset-0 opacity-20 pointer-events-none">
+                    <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-amber-400 blur-3xl"></div>
+                    <div class="absolute top-1/2 right-0 w-80 h-80 rounded-full bg-indigo-500 blur-3xl"></div>
+                </div>
+
+                <div class="max-w-5xl mx-auto text-center relative z-10 space-y-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                        <i class="fa-solid fa-star text-amber-400 mr-1.5"></i> Inspired by Van Gogh & Artistic Masterpieces
+                    </span>
+                    <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-amber-100">
+                        Interactive Starry Night & Aesthetics Planner Studio
+                    </h1>
+                    <p class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
+                        Customize your daily focus, habits, schedule, and gratitude directly online. Export or print high-res PDFs instantly or buy the complete 100+ Page Bundle.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Interactive Planner Builder Grid -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left Column: Controls & Input Form (4 Cols) -->
+                    <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-slate-700 space-y-6 no-print">
+                        <div class="border-b border-slate-100 dark:border-slate-700 pb-4 flex justify-between items-center">
+                            <h2 class="font-bold text-lg text-slate-900 dark:text-white flex items-center">
+                                <i class="fa-solid fa-sliders text-indigo-500 mr-2"></i> Customizer
+                            </h2>
+                            <button onclick="loadSamplePlannerData()" class="text-xs text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                                Load Demo
+                            </button>
+                        </div>
+
+                        <!-- Theme Selection -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Art Theme Style</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setPlannerTheme('starry')" id="btn-theme-starry" class="p-2 text-xs font-bold rounded-xl border-2 border-amber-400 bg-slate-900 text-amber-300 flex flex-col items-center justify-center space-y-1 shadow-sm">
+                                    <i class="fa-solid fa-moon text-amber-400"></i>
+                                    <span>Starry Night</span>
+                                </button>
+                                <button onclick="setPlannerTheme('minimal')" id="btn-theme-minimal" class="p-2 text-xs font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex flex-col items-center justify-center space-y-1">
+                                    <i class="fa-solid fa-leaf text-emerald-500"></i>
+                                    <span>Minimalist</span>
+                                </button>
+                                <button onclick="setPlannerTheme('cozy')" id="btn-theme-cozy" class="p-2 text-xs font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 flex flex-col items-center justify-center space-y-1">
+                                    <i class="fa-solid fa-mug-hot text-amber-600"></i>
+                                    <span>Cozy Sun</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Text Inputs -->
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Date Header</label>
+                                <input type="text" id="input-date" oninput="updatePlannerView()" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. October 24, 2026">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Today's Focus Goal</label>
+                                <input type="text" id="input-focus" oninput="updatePlannerView()" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Main goal for the day...">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Top 3 Priorities (Line separated)</label>
+                                <textarea id="input-priorities" oninput="updatePlannerView()" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none" placeholder="1. Finish report&#10;2. Practice Portuguese&#10;3. Workout"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">To-Do Checklist (Line separated)</label>
+                                <textarea id="input-todos" oninput="updatePlannerView()" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none" placeholder="Buy groceries&#10;Call mom&#10;Study flashcards"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Water Intake (Glasses)</label>
+                                <input type="range" id="input-water" min="0" max="8" value="5" oninput="updatePlannerView()" class="w-full accent-indigo-600 cursor-pointer">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Gratitude Note</label>
+                                <input type="text" id="input-gratitude" oninput="updatePlannerView()" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Grateful for...">
+                            </div>
+                        </div>
+
+                        <!-- Print / Export Action Buttons -->
+                        <div class="pt-2 space-y-2">
+                            <button onclick="window.print()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-500/20 transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-print"></i>
+                                <span>Print / Save PDF (Free)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Live Interactive Canvas (8 Cols) -->
+                    <div class="lg:col-span-8 flex flex-col items-center">
+                        <div class="w-full mb-3 flex justify-between items-center no-print">
+                            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                <i class="fa-solid fa-eye text-indigo-500 mr-1"></i> Live Digital Sheet Preview
+                            </span>
+                            <span class="text-xs text-slate-400">Format: Standard A4 / Letter</span>
+                        </div>
+
+                        <!-- STAR NIGHT ARTISTIC CANVAS SHEET -->
+                        <div id="printable-planner" class="w-full max-w-[650px] aspect-[1/1.414] rounded-2xl p-6 sm:p-8 shadow-2xl transition-all duration-300 relative border border-slate-200/50 flex flex-col justify-between overflow-hidden" style="background: #fdfbf7;">
+                            
+                            <!-- Theme Decoration Overlay -->
+                            <div id="theme-overlay" class="absolute inset-0 pointer-events-none p-4 rounded-2xl border-[12px] border-indigo-900/10"></div>
+                            
+                            <!-- Starry Night Vincent Decorative Border Graphic (CSS/SVG styling) -->
+                            <div id="artistic-header-bg" class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-950 text-amber-300 p-6 flex flex-col justify-between">
+                                <div class="absolute inset-0 opacity-30 mix-blend-overlay" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 12px 12px;"></div>
+                                <div class="flex justify-between items-center relative z-10">
+                                    <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-widest uppercase text-amber-200 text-center w-full drop-shadow-md">DAY PLANNER</h1>
+                                </div>
+                                <div class="text-center text-xs font-serif text-amber-100/80 italic relative z-10 border-t border-amber-400/20 pt-1">
+                                    DATE: <span id="view-date" class="font-sans not-italic font-bold text-amber-300 underline underline-offset-4 decoration-amber-400/50">October 24, 2026</span>
+                                </div>
+                            </div>
+
+                            <!-- Content Wrapper inside canvas (pushed down by header) -->
+                            <div class="mt-28 space-y-4 relative z-10 text-slate-800 flex-grow flex flex-col justify-between">
+                                
+                                <!-- Focus + Top Priorities -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Today's Focus -->
+                                    <div class="border-2 border-indigo-900/30 rounded-xl p-3 bg-white/80 shadow-sm backdrop-blur-sm">
+                                        <div class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-1 flex items-center border-b border-indigo-900/20 pb-1">
+                                            <i class="fa-solid fa-compass text-amber-600 mr-1.5"></i> Today's Focus
+                                        </div>
+                                        <p id="view-focus" class="text-sm font-medium text-slate-700 italic min-h-[3rem] flex items-center">
+                                            Focus on building consistency and learning Portuguese!
+                                        </p>
+                                    </div>
+
+                                    <!-- Top 3 Priorities -->
+                                    <div class="border-2 border-indigo-900/30 rounded-xl p-3 bg-white/80 shadow-sm backdrop-blur-sm">
+                                        <div class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-1 flex items-center border-b border-indigo-900/20 pb-1">
+                                            <i class="fa-solid fa-list-check text-amber-600 mr-1.5"></i> Top Priorities
+                                        </div>
+                                        <ol id="view-priorities" class="text-xs font-semibold text-slate-700 space-y-1 list-decimal list-inside pt-1">
+                                            <li>Complete daily task list</li>
+                                            <li>Study 10 Portuguese cards</li>
+                                            <li>Take a 30-min walk</li>
+                                        </ol>
+                                    </div>
+                                </div>
+
+                                <!-- Schedule (Left) + To-Do (Right) -->
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 flex-grow">
+                                    
+                                    <!-- Time Schedule (7 AM - 7 PM) -->
+                                    <div class="sm:col-span-6 border-2 border-indigo-900/30 rounded-xl p-3 bg-white/80 shadow-sm flex flex-col">
+                                        <div class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-2 flex items-center border-b border-indigo-900/20 pb-1">
+                                            <i class="fa-regular fa-clock text-amber-600 mr-1.5"></i> Schedule
+                                        </div>
+                                        <div class="space-y-1.5 text-[11px] text-slate-600 font-mono flex-grow">
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">07 AM</span> <span class="text-slate-400 italic">Morning Routine</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">09 AM</span> <span class="text-slate-400 italic">Deep Work / Study</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">11 AM</span> <span class="text-slate-400 italic">Portuguese Practice</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">01 PM</span> <span class="text-slate-400 italic">Lunch & Break</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">03 PM</span> <span class="text-slate-400 italic">Projects & Admin</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">05 PM</span> <span class="text-slate-400 italic">Exercise & Sunset</span>
+                                            </div>
+                                            <div class="flex items-center border-b border-dashed border-slate-200 pb-0.5">
+                                                <span class="w-12 font-bold text-indigo-900">07 PM</span> <span class="text-slate-400 italic">Relax & Dinner</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Checklist + Trackers -->
+                                    <div class="sm:col-span-6 space-y-3 flex flex-col justify-between">
+                                        
+                                        <!-- To-Do List -->
+                                        <div class="border-2 border-indigo-900/30 rounded-xl p-3 bg-white/80 shadow-sm flex-grow">
+                                            <div class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-2 flex items-center border-b border-indigo-900/20 pb-1">
+                                                <i class="fa-solid fa-check-square text-amber-600 mr-1.5"></i> To-Do List
+                                            </div>
+                                            <ul id="view-todos" class="space-y-1.5 text-xs text-slate-700">
+                                                <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-indigo-600"> Review Flashcards</li>
+                                                <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-indigo-600"> Hydrate 2L water</li>
+                                                <li class="flex items-center"><input type="checkbox" class="mr-2 rounded text-indigo-600"> Send daily emails</li>
+                                            </ul>
+                                        </div>
+
+                                        <!-- Hydration & Mood Tracker -->
+                                        <div class="border-2 border-indigo-900/30 rounded-xl p-3 bg-white/80 shadow-sm space-y-2">
+                                            <!-- Water -->
+                                            <div>
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-900 block mb-1">
+                                                    <i class="fa-solid fa-glass-water text-blue-500 mr-1"></i> Water Intake
+                                                </span>
+                                                <div id="view-water" class="flex space-x-1 justify-between">
+                                                    <!-- Water droplets generated via JS -->
+                                                </div>
+                                            </div>
+                                            <!-- Mood -->
+                                            <div class="pt-1 border-t border-slate-200">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-900 block mb-1">
+                                                    <i class="fa-solid fa-face-smile text-amber-500 mr-1"></i> Daily Mood
+                                                </span>
+                                                <div class="flex justify-around text-lg text-slate-400">
+                                                    <span class="cursor-pointer hover:text-amber-500 transition">😁</span>
+                                                    <span class="cursor-pointer hover:text-amber-500 transition">🙂</span>
+                                                    <span class="cursor-pointer hover:text-amber-500 transition">😐</span>
+                                                    <span class="cursor-pointer hover:text-amber-500 transition">😴</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Gratitude Bottom Banner -->
+                                <div class="border-2 border-indigo-900/30 rounded-xl p-3 bg-amber-50/50 shadow-sm">
+                                    <div class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-1 flex items-center">
+                                        <i class="fa-solid fa-heart text-rose-500 mr-1.5"></i> Daily Gratitude & Thoughts
+                                    </div>
+                                    <p id="view-gratitude" class="text-xs italic text-slate-600">
+                                        Grateful for peaceful mornings, good coffee, and new learning opportunities.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <!-- Footer watermark -->
+                            <div class="text-center text-[10px] text-slate-400 font-serif tracking-widest uppercase pt-2 border-t border-slate-200/50 mt-2">
+                                Designed with AuraStudio • Artistic Planner Edition
+                            </div>
+                        </div>
+
+                        <!-- Product Buy CTA Cards -->
+                        <div id="planner-cta" class="w-full max-w-[650px] mt-8 bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-xl border border-indigo-700/50 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+                            <div>
+                                <span class="bg-amber-400 text-slate-950 font-bold text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                    Instant Download
+                                </span>
+                                <h3 class="font-serif font-bold text-xl text-amber-200 mt-1">Get the Complete 2026 Digital Planner Pack</h3>
+                                <p class="text-xs text-slate-300 mt-1">
+                                    Includes 50+ Starry Night & Cozy Printable Templates + GoodNotes / Notability iPad PDF bundle.
+                                </p>
+                            </div>
+                            <div class="flex flex-col items-center sm:items-end w-full sm:w-auto">
+                                <span class="text-2xl font-extrabold text-amber-400">$3.50 <span class="text-xs text-slate-400 line-through">$12.00</span></span>
+                                <button onclick="simulatePurchase('Starry Night Planner Bundle', 3.50)" class="mt-2 w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Buy Now ($3.50)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 2: LEARN PORTUGUESE FAST (INTERACTIVE HUB FOR AMERICANS) -->
+        <!-- ========================================================================= -->
+        <section id="section-portuguese" class="hidden transition-opacity duration-300">
+            
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-5xl mx-auto text-center relative z-10 space-y-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                        <i class="fa-solid fa-bolt text-emerald-400 mr-1.5"></i> Fast-Track Method for English Speakers
+                    </span>
+                    <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-emerald-100">
+                        Master Brazilian Portuguese in Record Time 🇧🇷
+                    </h1>
+                    <p class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
+                        Skip boring grammar rules. Learn practical phrases with American phonetic pronunciation guides, audio flashcards, and real-life dialogue practice.
+                    </p>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+                
+                <!-- 1. LIVE TUTOR OFFER CARD ($10 CLASS) -->
+                <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-3xl p-6 sm:p-8 text-white shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-slate-900 text-9xl">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div class="space-y-3 relative z-10 max-w-2xl">
+                        <div class="inline-flex items-center bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-video mr-1.5"></i> 1-on-1 Live Conversation Practice
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-serif font-bold">Speak Portuguese Confidently in 30 Days</h2>
+                        <p class="text-amber-100 text-sm sm:text-base">
+                            Book a 45-minute live 1-on-1 trial session with a native Brazilian tutor tailored specifically for Americans travelling or moving to Brazil.
+                        </p>
+                        <div class="flex flex-wrap gap-4 text-xs font-semibold text-amber-950 pt-1">
+                            <span class="bg-white/90 px-3 py-1 rounded-lg"><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Native Accent</span>
+                            <span class="bg-white/90 px-3 py-1 rounded-lg"><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Flexible Scheduling</span>
+                            <span class="bg-white/90 px-3 py-1 rounded-lg"><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Free PDF Materials</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white text-slate-900 p-6 rounded-2xl shadow-xl w-full md:w-auto text-center shrink-0 space-y-3 relative z-10">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Special Trial Class</span>
+                        <div class="text-4xl font-extrabold text-slate-900">$10 <span class="text-xs text-slate-500 font-normal">/ 45 min</span></div>
+                        <button onclick="openBookingModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>Book $10 Trial Class</span>
+                        </button>
+                        <span class="text-[10px] text-slate-400 block">100% Satisfaction Guarantee</span>
+                    </div>
+                </div>
+
+                <!-- 2. QUICK PHRASEBOOK WITH AUDIO & PHONETICS FOR AMERICANS -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                        <div>
+                            <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white flex items-center">
+                                <i class="fa-solid fa-volume-high text-emerald-500 mr-2.5"></i> Survival Phrasebook for Americans
+                            </h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                Click the speaker icon to listen to native audio. Phonetic spelling shows how Americans can pronounce words effortlessly.
+                            </p>
+                        </div>
+                        
+                        <!-- Phrase Category Filter -->
+                        <div class="flex space-x-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+                            <button onclick="filterPhrases('all')" class="phrase-cat-btn active bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">All</button>
+                            <button onclick="filterPhrases('basics')" class="phrase-cat-btn bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Basics</button>
+                            <button onclick="filterPhrases('dining')" class="phrase-cat-btn bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Café & Dining</button>
+                            <button onclick="filterPhrases('social')" class="phrase-cat-btn bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">Socializing</button>
+                        </div>
+                    </div>
+
+                    <div id="phrasebook-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Phrase items dynamically loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- 3. INTERACTIVE FLASHCARDS WITH FLIP EFFECT -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="text-center max-w-xl mx-auto space-y-2">
+                        <span class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            Memory Boost
+                        </span>
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">Smart Portuguese Flashcards</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Click card to flip and reveal English translation & context sentence.</p>
+                    </div>
+
+                    <!-- Flashcard Box -->
+                    <div class="max-w-md mx-auto">
+                        <div id="flashcard-container" onclick="flipCard()" class="card-flip w-full h-64 cursor-pointer">
+                            <div class="card-inner w-full h-full relative rounded-2xl shadow-xl border-2 border-indigo-500/20 bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-950 text-white p-6 flex flex-col justify-between items-center text-center">
+                                
+                                <!-- FRONT SIDE -->
+                                <div class="card-front absolute inset-0 p-6 flex flex-col justify-between items-center">
+                                    <div class="w-full flex justify-between text-xs text-indigo-300 font-bold uppercase tracking-wider">
+                                        <span>Portuguese</span>
+                                        <button onclick="event.stopPropagation(); speakText(currentCard().pt)" class="hover:text-amber-400 transition" title="Listen Audio">
+                                            <i class="fa-solid fa-volume-high text-lg"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <h3 id="card-pt" class="text-3xl font-bold text-amber-300 mb-2">Tudo bem?</h3>
+                                        <p id="card-phonetic" class="text-sm font-mono text-indigo-200">"Too-doo bem?"</p>
+                                    </div>
+                                    <span class="text-xs text-slate-400 italic">Click card to flip <i class="fa-solid fa-rotate mr-1"></i></span>
+                                </div>
+
+                                <!-- BACK SIDE -->
+                                <div class="card-back absolute inset-0 p-6 bg-slate-900 rounded-2xl flex flex-col justify-between items-center border-2 border-amber-400/30">
+                                    <div class="w-full flex justify-between text-xs text-amber-400 font-bold uppercase tracking-wider">
+                                        <span>English Translation</span>
+                                        <span id="card-category" class="bg-amber-400/20 px-2 py-0.5 rounded text-[10px]">Basics</span>
+                                    </div>
+                                    <div>
+                                        <h3 id="card-en" class="text-2xl font-bold text-white mb-2">How are you? / All good?</h3>
+                                        <p id="card-example" class="text-xs text-slate-300 italic border-t border-slate-800 pt-2 mt-2">
+                                            "Oi, tudo bem com você?" (Hi, how are you?)
+                                        </p>
+                                    </div>
+                                    <span class="text-xs text-indigo-300">Click to flip back</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Card Controls -->
+                        <div class="flex justify-between items-center mt-6 px-4">
+                            <button onclick="prevCard()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-white text-xs font-bold rounded-xl transition">
+                                <i class="fa-solid fa-arrow-left mr-1"></i> Previous
+                            </button>
+                            <span id="card-counter" class="text-xs font-bold text-slate-500">1 / 5</span>
+                            <button onclick="nextCard()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow-md">
+                                Next <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. DIALOGUE SIMULATOR / QUIZ: "ORDER COFFEE IN RIO" -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Real World Practice</span>
+                            <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">
+                                Interactive Simulator: "Ordering Coffee in Rio" ☕
+                            </h2>
+                        </div>
+                        <span id="sim-score" class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
+                            Score: 0 / 3
+                        </span>
+                    </div>
+
+                    <!-- Simulator Chat Container -->
+                    <div id="sim-container" class="space-y-4 max-w-2xl mx-auto bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <!-- Step items loaded via JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-8 px-4 border-t border-slate-800 no-print text-xs">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 rounded-lg bg-amber-400 text-slate-900 flex items-center justify-center font-bold text-xs">A</div>
+                <span class="font-serif font-bold text-slate-200">AuraStudio & Learn Portuguese Hub</span>
+            </div>
+            <p>© 2026 AuraStudio. Monetize your skills online via Digital Products & Language Tutoring.</p>
+            <div class="flex space-x-4">
+                <a href="#" onclick="alert('Digital Planners are delivered instantly via PDF download links.')" class="hover:text-white">Delivery Policy</a>
+                <a href="#" onclick="alert('Tutoring classes are conducted live via Google Meet or Zoom.')" class="hover:text-white">1-on-1 Classes</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- MODAL: BOOK 1-ON-1 CLASS -->
+    <div id="booking-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-6 relative">
+            <button onclick="closeBookingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
+                    🇧🇷
+                </div>
+                <h3 class="font-serif font-bold text-2xl text-slate-900 dark:text-white">Book Your $10 Trial Class</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">45 Minutes Live Conversation Practice with a Native Tutor</p>
+            </div>
+
+            <form onsubmit="handleBookingSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name</label>
+                    <input type="text" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="John Smith">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Your Email</label>
+                    <input type="email" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="john@example.com">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Current Portuguese Level</label>
+                    <select class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option>Complete Beginner (Zero knowledge)</option>
+                        <option>Beginner (Know basic greetings)</option>
+                        <option>Intermediate (Can form simple sentences)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition text-sm">
+                    Confirm & Pay $10.00
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT LOGIC -->
+    <!-- ========================================================================= -->
+    <script>
+        // Phrasebook Data
+        const phrasesData = [
+            { pt: "Tudo bem?", phonetic: "Too-doo bem?", en: "How are you? / All good?", category: "basics" },
+            { pt: "Por favor", phonetic: "Por fah-vor", en: "Please", category: "basics" },
+            { pt: "Obrigado / Obrigada", phonetic: "Oh-bree-gah-doo / dah", en: "Thank you (Male/Female)", category: "basics" },
+            { pt: "Com licença", phonetic: "Com lee-sen-sah", en: "Excuse me", category: "basics" },
+            { pt: "Um café, por favor", phonetic: "Oom cah-feh, por fah-vor", en: "A coffee, please", category: "dining" },
+            { pt: "Quanto custa?", phonetic: "Kwan-too koos-tah?", en: "How much does it cost?", category: "dining" },
+            { pt: "A conta, por favor", phonetic: "Ah kon-tah, por fah-vor", en: "The check/bill, please", category: "dining" },
+            { pt: "Prazer em conhecê-lo", phonetic: "Prah-zair em kohn-yeh-seh-loo", en: "Nice to meet you", category: "social" },
+            { pt: "Você fala inglês?", phonetic: "Voh-seh fah-lah een-glehs?", en: "Do you speak English?", category: "social" },
+            { pt: "Onde fica a praia?", phonetic: "On-deh fee-kah ah pry-ah?", en: "Where is the beach?", category: "social" }
+        ];
+
+        // Flashcards Data
+        const flashcardsData = [
+            { pt: "Tudo bem?", phonetic: "Too-doo bem?", en: "How are you? / All good?", example: "Oi, tudo bem com você?", cat: "Greetings" },
+            { pt: "Bom dia!", phonetic: "Boh-m jee-ah!", en: "Good morning!", example: "Bom dia! Como vai você hoje?", cat: "Greetings" },
+            { pt: "Um café com leite", phonetic: "Oom cah-feh com lay-chee", en: "A coffee with milk", example: "Eu quero um café com leite, por favor.", cat: "Café" },
+            { pt: "Onde fica...?", phonetic: "On-deh fee-kah...?", en: "Where is...?", example: "Onde fica o banheiro?", cat: "Directions" },
+            { pt: "Adorei o Brasil!", phonetic: "Ah-doh-ray oh Brah-zeel!", en: "I loved Brazil!", example: "Adorei o Brasil e as pessoas!", cat: "Travel" }
+        ];
+
+        // Simulator State & Steps
+        let simCurrentStep = 0;
+        let simScore = 0;
+        const simSteps = [
+            {
+                waiter: "Olá! Bom dia. O que você gostaria de pedir?",
+                waiterTranslation: "Hello! Good morning. What would you like to order?",
+                options: [
+                    { text: "Um café expresso e um pão de queijo, por favor.", correct: true, feedback: "Great choice! Pão de queijo is a famous Brazilian cheese bread." },
+                    { text: "Goodbye, see you later!", correct: false, feedback: "Oops, that's English for leaving! Try ordering in Portuguese." }
+                ]
+            },
+            {
+                waiter: "Com certeza! Deseja mais alguma coisa?",
+                waiterTranslation: "Of course! Would you like anything else?",
+                options: [
+                    { text: "Não, só isso. Quanto custa?", correct: true, feedback: "Perfect! Asking for the price in natural Portuguese." },
+                    { text: "Eu não sei falar.", correct: false, feedback: "That means 'I don't know how to speak'. You can do better!" }
+                ]
+            },
+            {
+                waiter: "São R$ 15 reais. Aceitamos cartão!",
+                waiterTranslation: "That is R$ 15 reais. We accept cards!",
+                options: [
+                    { text: "Aqui está. Muito obrigado!", correct: true, feedback: "Awesome! You completed ordering coffee in Rio like a local!" },
+                    { text: "I want a burger.", correct: false, feedback: "Too late for a burger! Stick to the café order." }
+                ]
+            }
+        ];
+
+        let currentCardIndex = 0;
+        let isCardFlipped = false;
+
+        window.onload = function() {
+            renderPhrasebook('all');
+            renderFlashcard();
+            renderSimulatorStep();
+            updatePlannerView();
+        };
+
+        function switchTab(tabName) {
+            const secPlanner = document.getElementById('section-planner');
+            const secPortuguese = document.getElementById('section-portuguese');
+            
+            const navPlanner = document.getElementById('nav-planner');
+            const navPortuguese = document.getElementById('nav-portuguese');
+            const mobileNavPlanner = document.getElementById('mobile-nav-planner');
+            const mobileNavPortuguese = document.getElementById('mobile-nav-portuguese');
+
+            if (tabName === 'planner') {
+                secPlanner.classList.remove('hidden');
+                secPortuguese.classList.add('hidden');
+
+                navPlanner.className = "px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm";
+                navPortuguese.className = "px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+
+                mobileNavPlanner.className = "flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm";
+                mobileNavPortuguese.className = "flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-600 dark:text-slate-400";
+            } else {
+                secPlanner.classList.add('hidden');
+                secPortuguese.classList.remove('hidden');
+
+                navPortuguese.className = "px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm";
+                navPlanner.className = "px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+
+                mobileNavPortuguese.className = "flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm";
+                mobileNavPlanner.className = "flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-600 dark:text-slate-400";
+            }
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon text-lg';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-lg text-amber-400';
+            }
+        }
+
+        function scrollToCTA() {
+            switchTab('planner');
+            document.getElementById('planner-cta').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR'; // Brazilian Portuguese
+                utterance.rate = 0.9;
+                window.speechSynthesis.cancel(); // cancel previous speech
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Audio speech synthesis is not supported on this browser.');
+            }
+        }
+
+        function renderPhrasebook(category) {
+            const grid = document.getElementById('phrasebook-grid');
+            grid.innerHTML = '';
+
+            const filtered = category === 'all' ? phrasesData : phrasesData.filter(p => p.category === category);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 hover:border-emerald-500 transition space-y-2 flex justify-between items-center";
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="font-bold text-slate-900 dark:text-white text-base">${item.pt}</div>
+                        <div class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">"${item.phonetic}"</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">${item.en}</div>
+                    </div>
+                    <button onclick="speakText('${item.pt.replace(/'/g, "\\'")}')" class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center hover:bg-emerald-200 transition shrink-0">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterPhrases(category) {
+            document.querySelectorAll('.phrase-cat-btn').forEach(btn => {
+                btn.className = "phrase-cat-btn bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap";
+            });
+            event.target.className = "phrase-cat-btn active bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap";
+            renderPhrasebook(category);
+        }
+
+        function currentCard() {
+            return flashcardsData[currentCardIndex];
+        }
+
+        function renderFlashcard() {
+            const card = currentCard();
+            document.getElementById('card-pt').innerText = card.pt;
+            document.getElementById('card-phonetic').innerText = `"${card.phonetic}"`;
+            document.getElementById('card-en').innerText = card.en;
+            document.getElementById('card-example').innerText = `"${card.example}"`;
+            document.getElementById('card-category').innerText = card.cat;
+            document.getElementById('card-counter').innerText = `${currentCardIndex + 1} / ${flashcardsData.length}`;
+
+            // Reset flip
+            isCardFlipped = false;
+            document.getElementById('flashcard-container').classList.remove('flipped');
+        }
+
+        function flipCard() {
+            isCardFlipped = !isCardFlipped;
+            document.getElementById('flashcard-container').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcardsData.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + flashcardsData.length) % flashcardsData.length;
+            renderFlashcard();
+        }
+
+        function renderSimulatorStep() {
+            const container = document.getElementById('sim-container');
+            const step = simSteps[simCurrentStep];
+
+            if (simCurrentStep >= simSteps.length) {
+                container.innerHTML = `
+                    <div class="text-center py-8 space-y-4">
+                        <div class="text-5xl">🎉</div>
+                        <h3 class="font-serif font-bold text-2xl text-slate-900 dark:text-white">Simulator Completed!</h3>
+                        <p class="text-xs text-slate-500">You successfully ordered coffee in Rio de Janeiro!</p>
+                        <button onclick="restartSimulator()" class="bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md hover:bg-emerald-700 transition">
+                            Restart Practice
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <!-- Waiter speech bubble -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                        ☕
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-1">
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Waiter (Rio Café)</span>
+                        <p class="font-bold text-slate-900 dark:text-white text-sm">${step.waiter}</p>
+                        <p class="text-xs text-slate-400 italic">"${step.waiterTranslation}"</p>
+                        <button onclick="speakText('${step.waiter.replace(/'/g, "\\'")}')" class="text-xs text-emerald-600 font-semibold mt-1 inline-flex items-center">
+                            <i class="fa-solid fa-volume-high mr-1"></i> Listen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Reply Options -->
+                <div class="pt-4 space-y-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Choose your response:</span>
+                    ${step.options.map((opt, idx) => `
+                        <button onclick="handleSimChoice(${idx})" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 transition font-medium text-xs text-slate-800 dark:text-slate-200 flex justify-between items-center">
+                            <span>${opt.text}</span>
+                            <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function handleSimChoice(choiceIndex) {
+            const step = simSteps[simCurrentStep];
+            const choice = step.options[choiceIndex];
+
+            if (choice.correct) {
+                simScore += 1;
+                document.getElementById('sim-score').innerText = `Score: ${simScore} / ${simSteps.length}`;
+            }
+
+            alert(choice.feedback);
+            simCurrentStep += 1;
+            renderSimulatorStep();
+        }
+
+        function restartSimulator() {
+            simCurrentStep = 0;
+            simScore = 0;
+            document.getElementById('sim-score').innerText = `Score: 0 / ${simSteps.length}`;
+            renderSimulatorStep();
+        }
+
+        function updatePlannerView() {
+            const date = document.getElementById('input-date').value || "October 24, 2026";
+            const focus = document.getElementById('input-focus').value || "Focus on building consistency and learning Portuguese!";
+            const prioritiesText = document.getElementById('input-priorities').value;
+            const todosText = document.getElementById('input-todos').value;
+            const waterCount = parseInt(document.getElementById('input-water').value) || 5;
+            const gratitude = document.getElementById('input-gratitude').value || "Grateful for peaceful mornings and learning opportunities.";
+
+            document.getElementById('view-date').innerText = date;
+            document.getElementById('view-focus').innerText = focus;
+            document.getElementById('view-gratitude').innerText = gratitude;
+
+            // Render Priorities List
+            const prioritiesList = document.getElementById('view-priorities');
+            prioritiesList.innerHTML = '';
+            const pItems = prioritiesText ? prioritiesText.split('\n') : ["Complete daily task list", "Study 10 Portuguese cards", "Take a 30-min walk"];
+            pItems.slice(0, 3).forEach(p => {
+                if (p.trim()) {
+                    const li = document.createElement('li');
+                    li.innerText = p.trim();
+                    prioritiesList.appendChild(li);
+                }
+            });
+
+            // Render To-Do List
+            const todosList = document.getElementById('view-todos');
+            todosList.innerHTML = '';
+            const tItems = todosText ? todosText.split('\n') : ["Review Flashcards", "Hydrate 2L water", "Send daily emails"];
+            tItems.slice(0, 6).forEach(t => {
+                if (t.trim()) {
+                    const li = document.createElement('li');
+                    li.className = "flex items-center";
+                    li.innerHTML = `<input type="checkbox" class="mr-2 rounded text-indigo-600"> ${t.trim()}`;
+                    todosList.appendChild(li);
+                }
+            });
+
+            // Render Water Drops
+            const waterContainer = document.getElementById('view-water');
+            waterContainer.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                const drop = document.createElement('i');
+                if (i <= waterCount) {
+                    drop.className = "fa-solid fa-droplet text-blue-500 text-sm";
+                } else {
+                    drop.className = "fa-regular fa-droplet text-slate-300 text-sm";
+                }
+                waterContainer.appendChild(drop);
+            }
+        }
+
+        function loadSamplePlannerData() {
+            document.getElementById('input-date').value = "November 10, 2026";
+            document.getElementById('input-focus').value = "Master 15 new Portuguese verbs and publish planner!";
+            document.getElementById('input-priorities').value = "Record 1-min video for TikTok\nPractice Portuguese phrasebook\nDrink 8 glasses of water";
+            document.getElementById('input-todos').value = "Book $10 tutoring session\nReview Van Gogh planner design\nTake afternoon walk";
+            document.getElementById('input-water').value = "7";
+            document.getElementById('input-gratitude').value = "Grateful for global online income opportunities.";
+            updatePlannerView();
+        }
+
+        function setPlannerTheme(theme) {
+            const canvas = document.getElementById('printable-planner');
+            const headerBg = document.getElementById('artistic-header-bg');
+
+            if (theme === 'starry') {
+                canvas.style.background = "#fdfbf7";
+                headerBg.className = "absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-950 text-amber-300 p-6 flex flex-col justify-between";
+            } else if (theme === 'minimal') {
+                canvas.style.background = "#ffffff";
+                headerBg.className = "absolute top-0 left-0 right-0 h-32 bg-slate-900 text-white p-6 flex flex-col justify-between";
+            } else if (theme === 'cozy') {
+                canvas.style.background = "#fef3c7";
+                headerBg.className = "absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-amber-800 to-amber-950 text-amber-100 p-6 flex flex-col justify-between";
+            }
+        }
+
+        function openBookingModal() {
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+        }
+
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+            alert('🎉 Class booking submitted successfully! Check your email inbox for the calendar invite and $10 invoice link.');
+            closeBookingModal();
+        }
+
+        function simulatePurchase(productName, price) {
+            alert(`🛒 Purchase Link Triggered:\nItem: ${productName}\nAmount: $${price.toFixed(2)} USD\n\nRedirecting to checkout (Gumroad / Stripe interface simulation).`);
+        }
+    </script>
+</body>
+</html>
